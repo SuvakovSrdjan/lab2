@@ -247,6 +247,32 @@ begin
   );
   
   -- na osnovu signala iz vga_top modula dir_pixel_column i dir_pixel_row realizovati logiku koja genereise
+  dir_red <= x"FF" when dir_pixel_column <= 1*(H_res/8) else
+			 <= x"FF" when dir_pixel_column <= 2*(H_res/8) else
+			 <= x"00" when dir_pixel_column <= 3*(H_res/8) else
+			 <= x"00" when dir_pixel_column <= 4*(H_res/8) else
+			 <= x"FF" when dir_pixel_column <= 5*(H_res/8) else
+			 <= x"FF" when dir_pixel_column <= 6*(H_res/8) else
+			 <= x"00" when dir_pixel_column <= 7*(H_res/8) else
+			 <= x"00" when others;
+	
+	dir_green <= x"FF" when dir_pixel_column <= 1*(H_res/8) else
+			 <= x"FF" when dir_pixel_column <= 2*(H_res/8) else
+			 <= x"FF" when dir_pixel_column <= 3*(H_res/8) else
+			 <= x"FF" when dir_pixel_column <= 4*(H_res/8) else
+			 <= x"00" when dir_pixel_column <= 5*(H_res/8) else
+			 <= x"00" when dir_pixel_column <= 6*(H_res/8) else
+			 <= x"00" when dir_pixel_column <= 7*(H_res/8) else
+			 <= x"00" when others;
+			 
+	dir_blue <= x"FF" when dir_pixel_column <= 1*(H_res/8) else
+			 <= x"00" when dir_pixel_column <= 2*(H_res/8) else
+			 <= x"FF" when dir_pixel_column <= 3*(H_res/8) else
+			 <= x"00" when dir_pixel_column <= 4*(H_res/8) else
+			 <= x"FF" when dir_pixel_column <= 5*(H_res/8) else
+			 <= x"00" when dir_pixel_column <= 6*(H_res/8) else
+			 <= x"FF" when dir_pixel_column <= 7*(H_res/8) else
+			 <= x"00" when others;
   --dir_red
   --dir_green
   --dir_blue

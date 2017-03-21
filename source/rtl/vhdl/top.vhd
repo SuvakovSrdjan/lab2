@@ -51,6 +51,19 @@ architecture rtl of top is
   constant V_RES          : natural := V_RES_ARRAY(RES_TYPE);
   constant MEM_ADDR_WIDTH : natural := MEM_ADDR_WIDTH_ARRAY(RES_TYPE);
   constant MEM_SIZE       : natural := MEM_SIZE_ARRAY(RES_TYPE);
+  
+   component reg is
+	generic(
+    WIDTH    : positive := 1;
+    RST_INIT : integer := 0
+	);
+	port(
+        i_clk  : in  std_logic;
+        in_rst : in  std_logic;
+        i_d    : in  std_logic_vector(WIDTH-1 downto 0);
+        o_q    : out std_logic_vector(WIDTH-1 downto 0)
+		);
+	end component;
 
   component vga_top is 
     generic (
@@ -156,6 +169,10 @@ architecture rtl of top is
   signal dir_blue            : std_logic_vector(7 downto 0);
   signal dir_pixel_column    : std_logic_vector(10 downto 0);
   signal dir_pixel_row       : std_logic_vector(10 downto 0);
+  
+  signal next_txt_addr		  : std_logic_vector(MEM_ADDR_WIDTH-1 downto 0);
+  signal txt_addr_reg		  : std_logic_vector(MEM_ADDR_WIDTH-1 downto 0);
+
 
 begin
 
@@ -168,8 +185,8 @@ begin
   graphics_lenght <= conv_std_logic_vector(MEM_SIZE*8*8, GRAPH_MEM_ADDR_WIDTH);
   
   -- removed to inputs pin
-  direct_mode <= '1';
-  display_mode     <= "10";  -- 01 - text mode, 10 - graphics mode, 11 - text & graphics
+  direct_mode <= '0';
+  display_mode     <= "01";  -- 01 - text mode, 10 - graphics mode, 11 - text & graphics
   
   font_size        <= x"1";
   show_frame       <= '1';
@@ -278,6 +295,30 @@ begin
   --dir_blue
  
   -- koristeci signale realizovati logiku koja pise po TXT_MEM
+ text_output_reg: reg
+  generic map(
+		WIDTH    => MEM_ADDR_WIDTH,
+		RST_INIT => 0
+	)
+   port map(
+		i_clk  => pix_clock_s,
+		in_rst => vga_rst_n_s,
+		i_d    => next_txt_addr,
+		o_q    => txt_addr_reg
+	);
+
+  next_txt_addr <= txt_addr_reg + 1 when txt_addr_reg < 1200 else
+						conv_std_logic_vector(0,14);
+						 
+
+  char_we <= '1';
+  char_address <= txt_addr_reg;
+
+
+	
+  char_value <= conv_std_logic_vector(7,6) when char_address = x"235" else
+					conv_std_logic_vector(32,6);
+					
   --char_address
   --char_value
   --char_we
